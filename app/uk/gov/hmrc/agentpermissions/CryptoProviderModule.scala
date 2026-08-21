@@ -29,15 +29,7 @@ class CryptoProviderModule extends Module {
     val fieldLevelEncryption = configuration.get[Configuration]("fieldLevelEncryption")
 
     if fieldLevelEncryption.get[Boolean]("enable") then
-      val currentKey = fieldLevelEncryption.get[String]("key")
-      val previousKeys = fieldLevelEncryption.getOptional[Seq[String]]("previousKeys").getOrElse(Nil)
-
-      val ecbDecrypters = previousKeys.map(SymmetricCryptoFactory.aesCrypto)
-
-      SymmetricCryptoFactory.composeCrypto(
-        currentCrypto = SymmetricCryptoFactory.aesGcmCrypto(currentKey),
-        previousDecrypters = ecbDecrypters
-      )
+      SymmetricCryptoFactory.aesGcmCrypto(fieldLevelEncryption.get[String]("key"))
     else NoCrypto
 
   def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] =
